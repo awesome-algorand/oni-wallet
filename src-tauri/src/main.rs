@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    tauri_wallet_lib::run()
+    oni_wallet_lib::run()
 }
