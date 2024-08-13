@@ -1,7 +1,7 @@
 {
-  "productName": "tauri-wallet",
+  "productName": "oni-wallet",
   "version": "0.0.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "foundation.algorand.oni",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -11,7 +11,7 @@
   "app": {
     "windows": [
       {
-        "title": "tauri-wallet",
+        "title": "oni-wallet",
         "width": 800,
         "height": 600
       }
