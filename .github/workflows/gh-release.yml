@@ -1,0 +1,122 @@
+name: Release binary packages
+# for now, just put the produced artifacts in GH Releases
+# this won't work without a GITHUB_TOKEN, see lines 39 & 97
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release
+
+jobs:
+  create_release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.create_release.outputs.id }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+
+      - name: Get version
+        id: get_version
+        run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Create release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: '*This release was generated automatically using GitHub Actions.*'
+          draft: true
+          name: ${{ steps.get_version.outputs.PACKAGE_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}          
+
+  create_packages:
+    needs: create_release
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+          cache-dependency-path: v2/package-lock.json
+
+      - name: Install apt dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt install -y --no-install-recommends libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev
+
+      - name: Install frontend dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build front-end
+        run: npm run build
+
+      - name: Install cargo packager
+        run: cargo install cargo-packager
+
+      - name: Build the app
+        run: |
+          cd src-tauri
+          cargo packager --release
+
+      - name: Find release binary
+        id: find_release_binary
+        run: |
+          node -p "(f=>f.writeFileSync(process.env.GITHUB_OUTPUT,'FILENAME='+f.readdirSync('./src-tauri/target/release').find(n=>/\.deb$|\.appimage$|\.dmg$|-setup\.exe$/i.test(n))))(require('fs'))"
+
+      - name: Upload binary to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: src-tauri/target/release/${{ steps.find_release_binary.outputs.FILENAME }}
+          asset_name: ${{ steps.find_release_binary.outputs.FILENAME }}
+          asset_content_type: application/octet-stream
+
+  publish-release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: [create_release, create_packages]
+
+    steps:
+      - name: Publish release
+        id: publish-release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: `${{ needs.create_release.outputs.release_id }}`,
+              draft: false,
+              prerelease: false
+            })
