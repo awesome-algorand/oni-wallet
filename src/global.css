@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  overflow: hidden;
+}
+
+#root {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 4rem 1fr 4rem;
+  height: 100vh;
+}
+
+@layer base {
+
+  :root  {
+    --background: 141 100% 100%;
+    --foreground: 141 5% 10%;
+    --card: 141 50% 100%;
+    --card-foreground: 141 5% 15%;
+    --popover: 141 100% 100%;
+    --popover-foreground: 141 100% 10%;
+    --primary: 141 42.2% 17.6%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 141 30% 90%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 103 30% 95%;
+    --muted-foreground: 141 5% 40%;
+    --accent: 103 30% 90%;
+    --accent-foreground: 141 5% 15%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 141 5% 100%;
+    --border: 141 30% 82%;
+    --input: 141 30% 50%;
+    --ring: 141 42.2% 17.6%;
+    --radius: 1rem;
+  }
+  .dark  {
+    --background: 141 50% 10%;
+    --foreground: 141 5% 100%;
+    --card: 141 50% 10%;
+    --card-foreground: 141 5% 100%;
+    --popover: 141 50% 5%;
+    --popover-foreground: 141 5% 100%;
+    --primary: 141 42.2% 17.6%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 141 30% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 103 30% 25%;
+    --muted-foreground: 141 5% 65%;
+    --accent: 103 30% 25%;
+    --accent-foreground: 141 5% 95%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 141 5% 100%;
+    --border: 141 30% 50%;
+    --input: 141 30% 50%;
+    --ring: 141 42.2% 17.6%;
+    --radius: 1rem;
+  }
+
+}
+
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
