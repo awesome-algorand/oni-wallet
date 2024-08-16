@@ -10,24 +10,12 @@ import {
 } from "@/components/ui/drawer.tsx";
 import {forwardRef, useState} from "react";
 import {ListItem} from "@/components/ui/list-item.tsx";
-import {zodResolver} from "@hookform/resolvers/zod"
-import {useForm} from "react-hook-form"
-import {z} from "zod"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import {Input} from "@/components/ui/input"
-import {Slider} from "@/components/ui/slider.tsx";
-
+import {WalletManager} from "@txnlab/use-wallet-react";
+import {useWallet} from "@/hooks/use-wallet.ts";
+import {SendTransactionForm} from "@/forms/send-transaction-form.tsx";
 type DrawerType = "send" | "receive" | "opt-in"
 
-function OptInDrawer() {
+function OptInDrawer({manager}: { manager: WalletManager }) {
     return (
         <DrawerContent>
             <DrawerHeader>
@@ -80,104 +68,17 @@ function ReceiverAddressDrawer() {
     )
 }
 
-const formSchema = z.object({
-    receiver: z.string().length(5, {message: "Receiver must be 5 characters."}),
-    assetId: z.number(),
-    quantity: z.number().min(1, {message: "Quantity must be at least 1."}),
-    notes: z.string(),
-})
-
-function SendTransactionDrawer({type}: { type: DrawerType }) {
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            receiver: "",
-            assetId: 0,
-            quantity: 0,
-            notes: "",
-        },
-    })
-
-    // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values)
-    }
-
+function SendTransactionDrawer() {
     return (
         <DrawerContent>
             <div className="mx-auto w-full max-w-sm">
                 <DrawerHeader>
-                    <DrawerTitle>{type === "send" ? "Send Payment" : "Receiver Address"}</DrawerTitle>
+                    <DrawerTitle>{"Send Payment"}</DrawerTitle>
                     <DrawerDescription></DrawerDescription>
                 </DrawerHeader>
                 <div className="p-4 pb-0">
                     <div className="flex items-center justify-center space-x-2">
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                <FormField
-                                    control={form.control}
-                                    name="receiver"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Recipient Address</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="woods.algo" {...field} />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="assetId"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Asset</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="ALGO" {...field} />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="quantity"
-                                    render={() => (
-                                        <FormItem>
-                                            <FormLabel>Quantity</FormLabel>
-                                            <FormControl>
-                                                <Slider
-                                                    // Max should be (Min-Balance + Fee) - Balance
-                                                    max={1000}
-                                                    onChange={(e: any) => form.setValue("quantity", parseInt(e.target.value))}
-                                                />
-                                                {/*<Input placeholder="shadcn" {...field} />*/}
-                                            </FormControl>
-                                            <FormDescription>
-                                                {form.getValues("quantity")}
-                                            </FormDescription>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="notes"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Notes</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Lorem ipsum" {...field} />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                            </form>
-                        </Form>
+                        <SendTransactionForm/>
                     </div>
                     <div className="mt-3 h-[120px]">
                     </div>
@@ -186,23 +87,20 @@ function SendTransactionDrawer({type}: { type: DrawerType }) {
                     <DrawerClose asChild>
                         <Button variant="outline" className="flex-1">Cancel</Button>
                     </DrawerClose>
-                    <DrawerClose asChild>
-                        <Button className="flex-1" type="submit">Send</Button>
-                    </DrawerClose>
                 </DrawerFooter>
             </div>
         </DrawerContent>
     )
 }
 
-function AccountPageDrawer({type}: { type: DrawerType }) {
+function AccountPageDrawer({type, manager}: { type: DrawerType, manager: WalletManager }) {
     if (type === "opt-in") {
-        return <OptInDrawer/>
+        return <OptInDrawer manager={manager}/>
     }
     if (type === "receive") {
         return <ReceiverAddressDrawer/>
     }
-    return <SendTransactionDrawer type={type}/>
+    return <SendTransactionDrawer/>
 }
 
 const PaymentButton = forwardRef<HTMLButtonElement, any>((props, ref) => {
@@ -215,6 +113,7 @@ const PaymentButton = forwardRef<HTMLButtonElement, any>((props, ref) => {
 })
 
 export function AccountPage() {
+    const manager = useWallet()
     const [drawerType, setDrawerType] = useState<DrawerType>("send")
     const assets = [
         {
@@ -238,7 +137,7 @@ export function AccountPage() {
     ]
     return (
         <Drawer>
-            <AccountPageDrawer type={drawerType}/>
+            <AccountPageDrawer type={drawerType} manager={manager}/>
             <div className="h-full flex flex-col p-2">
                 <div className="grid w-full justify-center items-center text-center gap-2 my-4">
                     <h1 className="text-4xl bold">356 ALGO</h1>

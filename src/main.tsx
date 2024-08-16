@@ -11,7 +11,8 @@ import {ExplorePage} from "@/pages/ExplorePage.tsx";
 import {SettingsPage} from "@/pages/SettingsPage.tsx";
 import {ActivityPage} from "@/pages/ActivityPage.tsx";
 import {ThemeProvider} from "@/components/theme-provider.tsx";
-
+import {WalletProvider} from "@txnlab/use-wallet-react";
+import {manager} from '@/lib/manager.ts'
 const router = createBrowserRouter([
     {
         path: "/",
@@ -37,10 +38,13 @@ const router = createBrowserRouter([
     },
 ]);
 
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <RouterProvider router={router} />
-      </ThemeProvider>
-  </React.StrictMode>,
+    <React.StrictMode>
+        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+            <WalletProvider manager={manager}>
+                <RouterProvider router={router}/>
+            </WalletProvider>
+        </ThemeProvider>
+    </React.StrictMode>,
 );

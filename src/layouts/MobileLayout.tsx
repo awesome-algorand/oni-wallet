@@ -27,6 +27,9 @@ import {
     DrawerTitle, DrawerTrigger
 } from "@/components/ui/drawer.tsx";
 import * as React from "react";
+import {WalletManager} from "@txnlab/use-wallet-react";
+import {useWallet} from "@/hooks/use-wallet.ts";
+
 export type MobileBottomNavLinkProps = {
     icon: ReactElement,
     active?: boolean,
@@ -45,21 +48,24 @@ export function MobileBottomNavLink({icon, label, active, className, ...rest}: M
     )
 }
 
-export const WalletMenu = React.forwardRef<HTMLDivElement, any>((props, ref) => {
+type WalletMenuProps = {
+    onClick: () => void
+    manager: WalletManager
+}
+export const WalletMenu = React.forwardRef<HTMLDivElement, any>((props: WalletMenuProps, ref) => {
+    const {manager} = props
+    console.log(manager)
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" >Wallet 1 <ChevronDown/></Button>
+                <Button variant="ghost" >{props.manager.activeAccount?.name}<ChevronDown/></Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
                 <DropdownMenuLabel>Accounts</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem disabled>
-                    <span>Wallet 1</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <span>Wallet 2</span>
-                </DropdownMenuItem>
+                {manager.activeWalletAccounts && manager.activeWalletAccounts.map((account) => (
+                    <DropdownMenuItem onClick={()=>manager.wallets[0].setActiveAccount(account.address)} disabled={props.manager.activeAddress === account.address} key={account.address}>{account.name}</DropdownMenuItem>
+                ))}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={props.onClick} ref={ref}>
                     <Plus className="mr-2 h-4 w-4" />
@@ -70,7 +76,7 @@ export const WalletMenu = React.forwardRef<HTMLDivElement, any>((props, ref) => 
     )
 })
 
-function WalletDrawer() {
+function WalletDrawer({manager}: {manager: WalletManager}) {
     return (
         <DrawerContent>
             <DrawerHeader>
@@ -79,7 +85,10 @@ function WalletDrawer() {
             </DrawerHeader>
             <div className="p-4 pb-0">
                 <div className="flex items-center justify-center space-x-2">
-
+                    <DrawerTrigger asChild><Button variant="outline" className="flex-1" onClick={()=>{
+                        manager.wallets[0].connect({name:`Wallet ${manager.activeWalletAccounts ? manager.activeWalletAccounts.length + 1 : 1}`, manager})
+                    }}>Create New Address</Button></DrawerTrigger>
+                    <Button variant="outline" className="flex-1">Import Existing Address</Button>
                 </div>
                 <div className="mt-3 h-[120px]">
                 </div>
@@ -94,6 +103,7 @@ function WalletDrawer() {
 }
 
 export function MobileLayout(){
+    const manager = useWallet()
     const location = useLocation()
 
     const indicatorPositions = {
@@ -107,8 +117,8 @@ export function MobileLayout(){
             <header className="w-full h-16 border grid grid-cols-3 px-4 items-center justify-center align-middle">
                 <Tauri className="h-8"/>
                 <Drawer>
-                    <WalletDrawer/>
-                    <DrawerTrigger asChild><WalletMenu/></DrawerTrigger>
+                    <WalletDrawer manager={manager}/>
+                    <DrawerTrigger asChild><WalletMenu manager={manager}/></DrawerTrigger>
                 </Drawer>
                 <Bell className="ml-auto"/>
             </header>
