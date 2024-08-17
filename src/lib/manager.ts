@@ -7,8 +7,8 @@ export const manager = new WalletManager({
         id: WalletId.CUSTOM,
         options: {provider},
         metadata: {
-            name: 'Example Wallet',
-            icon: 'data:image/svg+xml;base64,...',
+            name: 'Oni',
+            icon: '/tauri.svg',
         }
     }],
     network: NetworkId.TESTNET

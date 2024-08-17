@@ -21,6 +21,9 @@ import {Slider} from "@/components/ui/slider.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {useAccountWatcher} from "@/hooks/use-algorand/use-account-watcher.ts";
+
+const ALGO_DENOM = 1000000
 
 export const formSchema = z.object({
     receiver: z.string().min(5, {message: "Receiver must be 5 characters."}),
@@ -57,6 +60,8 @@ export async function onSubmit(values: z.infer<typeof formSchema>) {
 }
 
 export function SendTransactionForm(){
+    //@ts-expect-error, always have an active address
+    const query = useAccountWatcher({address: manager.activeAddress})
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -66,6 +71,10 @@ export function SendTransactionForm(){
             notes: "",
         },
     })
+
+    if(query.isLoading || typeof query.data === 'undefined'){
+        return <div>Loading...</div>
+    }
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -103,14 +112,14 @@ export function SendTransactionForm(){
                             <FormLabel>Quantity</FormLabel>
                             <FormControl>
                                 <Slider
+                                    min={0}
                                     // Max should be (Min-Balance + Fee) - Balance
-                                    max={1000}
+                                    max={query.data.amount || 0}
                                     onChange={(e: any) => form.setValue("quantity", parseInt(e.target.value))}
                                 />
-                                {/*<Input placeholder="shadcn" {...field} />*/}
                             </FormControl>
                             <FormDescription>
-                                {form.getValues("quantity")}
+                                {form.getValues("quantity")/ALGO_DENOM} ALGO
                             </FormDescription>
                             <FormMessage/>
                         </FormItem>

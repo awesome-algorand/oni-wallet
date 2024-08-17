@@ -54,7 +54,6 @@ type WalletMenuProps = {
 }
 export const WalletMenu = React.forwardRef<HTMLDivElement, any>((props: WalletMenuProps, ref) => {
     const {manager} = props
-    console.log(manager)
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -114,7 +113,7 @@ export function MobileLayout(){
     }
     return (
         <>
-            <header className="w-full h-16 border grid grid-cols-3 px-4 items-center justify-center align-middle">
+            <header className="w-full h-16 border dark:border-none grid grid-cols-3 px-4 items-center justify-center align-middle">
                 <Tauri className="h-8"/>
                 <Drawer>
                     <WalletDrawer manager={manager}/>
@@ -125,7 +124,7 @@ export function MobileLayout(){
             <main className="flex-1 py-2 overflow-auto">
                 <Outlet/>
             </main>
-            <nav className="w-full h-16 border">
+            <nav className="w-full h-16 border dark:border-none">
                 <div className="relative grid h-full max-w-sm grid-cols-4 mx-auto font-medium">
                     <motion.div
                         className="absolute bg-primary h-1 w-16 top-0"

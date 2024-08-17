@@ -15,14 +15,18 @@ import {
 } from "@/components/ui/select"
 import {Switch} from "@/components/ui/switch.tsx";
 import {Button} from "@/components/ui/button.tsx";
+import {useWallet} from "@/hooks/use-wallet.ts";
+import {NetworkId} from "@txnlab/use-wallet-react";
 export function SettingsPage(){
+    const manager = useWallet()
+    console.log(manager)
     return (
         <div className="p-4">
         <Accordion type="single" collapsible className="w-full bg-accent rounded px-4">
             <AccordionItem value="item-1">
                 <AccordionTrigger>Network Configuration</AccordionTrigger>
                 <AccordionContent>
-                    <Select >
+                    <Select value={manager.activeNetwork} onValueChange={(value: NetworkId)=>manager.setActiveNetwork(value)}>
                         <SelectTrigger className="w-full mb-4 overflow-visible">
                             <SelectValue placeholder="Mainnet" />
                         </SelectTrigger>
@@ -33,11 +37,10 @@ export function SettingsPage(){
                                 <SelectItem value="testnet">Testnet</SelectItem>
                                 <SelectItem value="betanet">Betanet</SelectItem>
                                 <SelectItem value="localnet">Localnet</SelectItem>
-                                <SelectItem value="F-NET">F-NET</SelectItem>
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    <Select>
+                    <Select disabled>
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Nodely" />
                         </SelectTrigger>
@@ -66,7 +69,7 @@ export function SettingsPage(){
                 <AccordionTrigger>Delete Wallet</AccordionTrigger>
                 <AccordionContent>
                     Are you sure? This action is irreversible.
-                    <Button variant="destructive" className="w-full my-4">Confirm</Button>
+                    <Button variant="destructive" className="w-full my-4" onClick={()=>manager.wallets[0].disconnect()}>Confirm</Button>
                 </AccordionContent>
             </AccordionItem>
         </Accordion>

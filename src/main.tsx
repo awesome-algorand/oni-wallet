@@ -13,6 +13,10 @@ import {ActivityPage} from "@/pages/ActivityPage.tsx";
 import {ThemeProvider} from "@/components/theme-provider.tsx";
 import {WalletProvider} from "@txnlab/use-wallet-react";
 import {manager} from '@/lib/manager.ts'
+import {QueryClientProvider} from "@tanstack/react-query";
+import {query} from "@/lib/query.ts";
+import {ReactQueryDevtools} from "@tanstack/react-query-devtools";
+import {Toaster} from "@/components/ui/toaster.tsx";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -41,9 +45,13 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <React.StrictMode>
-        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+        <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
             <WalletProvider manager={manager}>
-                <RouterProvider router={router}/>
+                <QueryClientProvider client={query}>
+                    <RouterProvider router={router}/>
+                    <ReactQueryDevtools buttonPosition="top-left"/>
+                    <Toaster />
+                </QueryClientProvider>
             </WalletProvider>
         </ThemeProvider>
     </React.StrictMode>,

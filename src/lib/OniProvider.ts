@@ -21,10 +21,10 @@ export class OniProvider implements CustomProvider {
      */
     async connect({name, manager}: {name: string, manager: WalletManager}): Promise<WalletAccountWithSecret[]> {
         const account = generateAccount()
+        console.log('Generated Account', account.addr)
         let result = manager.activeWalletAccounts ? [...manager.activeWalletAccounts as WalletAccountWithSecret[]] : []
         return [{ address: account.addr, secret: Array.from(account.sk), name  }, ...result]
     }
-
     /**
      * @TODO: Integrate with a secret provider
      */
