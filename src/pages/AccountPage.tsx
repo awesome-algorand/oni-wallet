@@ -29,7 +29,7 @@ type DrawerType = "send" | "receive" | "opt-in"
 /**
  * AccountPageDrawer
  *
- * Handle the differnet drawers for the account page
+ * Handle the different drawers for the account page
  *
  * @param type
  * @param manager
@@ -176,7 +176,7 @@ export function AccountPage() {
                         <DrawerTrigger asChild>
                             <PaymentButton
                                 icon={<MoveDownRight/>}
-                                label="Recieve"
+                                label="Receive"
                                 onClick={() => setDrawerType("receive")}
                             />
                         </DrawerTrigger>
