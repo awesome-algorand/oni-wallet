@@ -1,0 +1,59 @@
+name: CI JavaScript
+
+on:
+  push:
+    paths:
+      - ".github/workflows/ci-js.yml"
+      - "**/*.{js|jsx|ts|tsx}"
+  pull_request:
+    paths:
+      - ".github/workflows/ci-js.yml"
+      - "**/*.{js|jsx|ts|tsx}"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre_ci:
+    uses: dtolnay/.github/.github/workflows/pre_ci.yml@master
+
+  check-js-licenses:
+    runs-on: ubuntu-latest
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install -g license-checker
+
+      - name: Check JavaScript Licenses
+        run: license-checker --summary --onlyAllow="MIT;Apache-2.0;BSD-2-Clause" 
+  biome:
+    runs-on: ubuntu-latest
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: latest
+
+      - name: Run Biome
+        run: biome ci .
