@@ -4,6 +4,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "license": "Unlicense",
   "scripts": {
     "dev": "vite",
     "dev:tauri": "tauri dev",
