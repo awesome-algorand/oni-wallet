@@ -1,0 +1,15 @@
+[workspace]
+members = [
+    "src-tauri"
+]
+
+[workspace.package]
+edition = "2021"
+rust-version = "1.77"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
