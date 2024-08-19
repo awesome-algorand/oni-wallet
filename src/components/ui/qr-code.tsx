@@ -66,10 +66,10 @@ export function QRCode({manager}: WalletManagerProps) {
             type: 'svg',
             data: toDeepLink({address: manager.activeAddress}),
             margin: 10,
-            imageOptions: { hideBackgroundDots: true, imageSize: 0.4, margin: 15 },
+            imageOptions: { hideBackgroundDots: true, margin: 15 },
             backgroundOptions: isDark ? theme.dark.backgroundOptions : theme.light.backgroundOptions,
             dotsOptions: isDark ? theme.dark.dotsOptions : theme.light.dotsOptions,
-            image: '/tauri.svg',
+            image: '/placeholder.png',
             cornersSquareOptions: isDark ? theme.dark.cornersSquareOptions : theme.light.cornersSquareOptions,
             cornersDotOptions: isDark ? theme.dark.cornersDotOptions : theme.light.cornersDotOptions,
         })
@@ -80,7 +80,8 @@ export function QRCode({manager}: WalletManagerProps) {
     }, [manager.activeAccount]);
 
     if(qrCodeData) {
-        return <img src={qrCodeData} alt="Algorand QRCode"/>
+        // TODO: Center the Image properly
+        return <div className="relative"><img className="absolute left-[40%] top-[40%] w-[4rem] h-[4rem] rounded-full" src="/tauri.png"/><img src={qrCodeData} alt="Algorand QRCode"/></div>
     }
     return <></>
 }

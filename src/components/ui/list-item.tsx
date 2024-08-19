@@ -1,4 +1,4 @@
-import {ComponentPropsWithoutRef, ReactElement} from "react";
+import {ComponentPropsWithoutRef, forwardRef, ReactElement} from "react";
 
 export type ListItemProps = {
     id: string
@@ -10,7 +10,7 @@ export type ListItemProps = {
 
 } & ComponentPropsWithoutRef<'div'>
 
-export function ListItem({id, disable, title, description, adornmentRight, adornmentLeft, ...props}: ListItemProps) {
+export const ListItem = forwardRef(({id, disable, title, description, adornmentRight, adornmentLeft, ...props}: ListItemProps)=>{
     return (
         <div className={"flex border rounded items-center justify-between w-full bg-accent h-16 px-2 my-2" + (disable ? " disable" : "")} {...props}>
             <div className="flex items-center space-x-4">
@@ -28,4 +28,4 @@ export function ListItem({id, disable, title, description, adornmentRight, adorn
             </div>
         </div>
     )
-}
+})
