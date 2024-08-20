@@ -11,9 +11,15 @@ import { ActivityPage } from "@/pages/ActivityPage.tsx";
 import { ExplorePage } from "@/pages/ExplorePage.tsx";
 import { SettingsPage } from "@/pages/SettingsPage.tsx";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { WalletProvider } from "@txnlab/use-wallet-react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { onOpenUrl } from '@tauri-apps/plugin-deep-link';
+
+onOpenUrl((url) => {
+    console.log(url)
+})
+
 const router = createBrowserRouter([
 	{
 		path: "/",
@@ -41,11 +47,11 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 	<React.StrictMode>
-		<ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+		<ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
 			<WalletProvider manager={manager}>
 				<QueryClientProvider client={query}>
 					<RouterProvider router={router} />
-					<ReactQueryDevtools buttonPosition="top-left" />
+					{/*<ReactQueryDevtools buttonPosition="top-left" />*/}
 					<Toaster />
 				</QueryClientProvider>
 			</WalletProvider>

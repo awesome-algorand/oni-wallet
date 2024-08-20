@@ -34,8 +34,8 @@ export function accountApplicationInformation<T>(
 	options: T = {} as T,
 ) {
 	return {
-		//@ts-expect-error, access private baseURL
 		queryKey: [
+			//@ts-expect-error, access private baseURL
 			client.c.bc.baseURL.origin,
 			"accountApplicationInformation",
 			data,
@@ -300,8 +300,8 @@ export function getLedgerStateDeltaForTransactionGroup<T>(
 	options: T = {} as T,
 ) {
 	return {
-		//@ts-expect-error, access private baseURL
 		queryKey: [
+			//@ts-expect-error, access private baseURL
 			client.c.bc.baseURL.origin,
 			"getLedgerStateDeltaForTransactionGroup",
 			data,
@@ -341,8 +341,8 @@ export function getTransactionGroupLedgerStateDeltasForRound<T>(
 	options: T = {} as T,
 ) {
 	return {
-		//@ts-expect-error, access private baseURL
 		queryKey: [
+			//@ts-expect-error, access private baseURL
 			client.c.bc.baseURL.origin,
 			"getTransactionGroupLedgerStateDeltasForRound",
 			data,
@@ -424,8 +424,8 @@ export function getPendingTransactionsByAddress<T>(
 	options: T = {} as T,
 ) {
 	return {
-		//@ts-expect-error, access private baseURL
 		queryKey: [
+			//@ts-expect-error, access private baseURL
 			client.c.bc.baseURL.origin,
 			"getPendingTransactionsByAddress",
 			data,
@@ -449,8 +449,9 @@ export function pendingTransactionInformation<T>(
 	options: T = {} as T,
 ) {
 	return {
-		//@ts-expect-error, access private baseURL
+
 		queryKey: [
+			//@ts-expect-error, access private baseURL
 			client.c.bc.baseURL.origin,
 			"pendingTransactionInformation",
 			data,
