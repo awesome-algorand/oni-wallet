@@ -81,7 +81,7 @@ export function SendTransactionForm() {
 	}
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full px-6">
 				<FormField
 					control={form.control}
 					name="receiver"

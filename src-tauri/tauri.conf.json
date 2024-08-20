@@ -34,8 +34,7 @@
 	"plugins": {
 		"deepLink": {
 			"mobile": [
-				{ "host": "your.website.com", "pathPrefix": ["/open"] },
-				{ "host": "another.site.br" }
+				{ "scheme": "liquid://", "host": "liquid-auth.onrender.com"}
 			],
 			"desktop": {
 				"schemes": ["liquid://"]

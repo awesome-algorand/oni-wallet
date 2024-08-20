@@ -12,16 +12,16 @@ import { SendTransactionForm } from "@/forms/send-transaction-form.tsx";
 export function SendTransactionDrawer() {
 	return (
 		<DrawerContent>
-			<div className="mx-auto w-full max-w-sm">
+			<div className="mx-auto w-full">
 				<DrawerHeader>
 					<DrawerTitle>{"Send Payment"}</DrawerTitle>
 					<DrawerDescription />
 				</DrawerHeader>
 				<div className="p-4 pb-0">
-					<div className="flex items-center justify-center space-x-2">
+					<div className="flex items-center justify-center">
 						<SendTransactionForm />
 					</div>
-					<div className="mt-3 h-[120px]" />
+					<div className="my-3" />
 				</div>
 				<DrawerFooter className="flex-row">
 					<DrawerClose asChild>

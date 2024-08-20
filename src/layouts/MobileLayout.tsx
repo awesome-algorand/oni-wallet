@@ -150,10 +150,10 @@ export function MobileLayout() {
 	const location = useLocation();
 
 	const indicatorPositions = {
-		"/": { left: "0.9rem" },
-		"/explore": { left: "6.4rem" },
-		"/activity": { left: "12rem" },
-		"/settings": { left: "17.68rem" },
+		"/": { left: "1rem" },
+		"/explore": { left: "7rem" },
+		"/activity": { left: "12.9rem" },
+		"/settings": { left: "19rem" },
 	};
 	return (
 		<>
