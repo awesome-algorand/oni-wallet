@@ -1,45 +1,45 @@
 {
-  "productName": "oni",
-  "version": "0.0.0",
-  "identifier": "foundation.algorand.oni",
-  "build": {
-    "beforeDevCommand": "pnpm run dev",
-    "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "pnpm run build",
-    "frontendDist": "../dist"
-  },
-  "app": {
-    "windows": [
-      {
-        "title": "oni",
-        "width": 800,
-        "height": 600
-      }
-    ],
-    "security": {
-      "csp": null
-    }
-  },
-  "bundle": {
-    "active": true,
-    "targets": "all",
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ]
-  },
-  "plugins": {
-    "deepLink": {
-      "mobile": [
-        { "host": "your.website.com", "pathPrefix": ["/open"] },
-        { "host": "another.site.br" }
-      ],
-      "desktop": {
-        "schemes": ["liquid://"]
-      }
-    }
-  }
+	"productName": "oni",
+	"version": "0.0.0",
+	"identifier": "foundation.algorand.oni",
+	"build": {
+		"beforeDevCommand": "pnpm run dev",
+		"devUrl": "http://localhost:1420",
+		"beforeBuildCommand": "pnpm run build",
+		"frontendDist": "../dist"
+	},
+	"app": {
+		"windows": [
+			{
+				"title": "oni",
+				"width": 800,
+				"height": 600
+			}
+		],
+		"security": {
+			"csp": null
+		}
+	},
+	"bundle": {
+		"active": true,
+		"targets": "all",
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		]
+	},
+	"plugins": {
+		"deepLink": {
+			"mobile": [
+				{ "host": "your.website.com", "pathPrefix": ["/open"] },
+				{ "host": "another.site.br" }
+			],
+			"desktop": {
+				"schemes": ["liquid://"]
+			}
+		}
+	}
 }
