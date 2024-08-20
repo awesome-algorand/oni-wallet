@@ -1,0 +1,6 @@
+[files]
+extend-exclude = [
+    "src/hooks/use-tinyman.ts",
+    "src/hooks/use-algorand/algod.ts",
+    "src/hooks/use-algorand/types.gen.ts",
+]

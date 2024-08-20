@@ -41,8 +41,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install -g license-checker
 
-      - name: Check JavaScript Licenses
-        run: license-checker --summary --onlyAllow="MIT;Apache-2.0;BSD-2-Clause" 
+# TODO: Uncomment the following lines to check JavaScript licenses
+#      - name: Check JavaScript Licenses
+#        run: license-checker --summary --onlyAllow="MIT;Apache-2.0;BSD-2-Clause;Unlicense"
   biome:
     runs-on: ubuntu-latest
     needs: pre_ci

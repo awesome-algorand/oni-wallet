@@ -1,274 +1,229 @@
-import {Button} from "@/components/ui/button.tsx";
-import {MoveDownRight, ChevronRight, MoveUpRight, SlidersHorizontal} from "lucide-react";
+import { AssetListItem } from "@/components/asset-list-item.tsx";
+import { Button } from "@/components/ui/button.tsx";
 import {
-    Drawer, DrawerClose,
-    DrawerContent,
-    DrawerDescription, DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger
-} from "@/components/ui/drawer.tsx";
-import {forwardRef, useState} from "react";
-import {ListItem} from "@/components/ui/list-item.tsx";
-import {zodResolver} from "@hookform/resolvers/zod"
-import {useForm} from "react-hook-form"
-import {z} from "zod"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import {Input} from "@/components/ui/input"
-import {Slider} from "@/components/ui/slider.tsx";
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import { Drawer, DrawerTrigger } from "@/components/ui/drawer.tsx";
+import { Spinner } from "@/components/ui/spinner.tsx";
+import { OptInDrawer } from "@/drawers/opt-in-drawer.tsx";
+import { QrCodeDrawer } from "@/drawers/qr-code-drawer.tsx";
+import { SendTransactionDrawer } from "@/drawers/send-transaction-drawer.tsx";
+import type { Account } from "@/hooks/use-algorand/types.gen.ts";
+import { useAccountWatcher } from "@/hooks/use-algorand/use-account-watcher.ts";
+import { useIconAssets, usePrice } from "@/hooks/use-tinyman.ts";
+import { useWallet } from "@/hooks/use-wallet.ts";
+import type { WalletManager } from "@txnlab/use-wallet-react";
+import { MoveDownRight, MoveUpRight, SlidersHorizontal } from "lucide-react";
+import { forwardRef, useState } from "react";
 
-type DrawerType = "send" | "receive" | "opt-in"
+type DrawerType = "send" | "receive" | "opt-in";
 
-function OptInDrawer() {
-    return (
-        <DrawerContent>
-            <DrawerHeader>
-                <DrawerTitle>Manage ASA opt-ins</DrawerTitle>
-                <DrawerDescription></DrawerDescription>
-            </DrawerHeader>
-            <div className="px-2.5 w-full overflow-auto max-h-[35rem]">
-                <ListItem id={"1"} title="hello" description="hello" adornmentLeft={<></>} adornmentRight={<></>}/>
-                <ListItem id={"1"} title="hello" description="hello" adornmentLeft={<></>} adornmentRight={<></>}/>
-                <ListItem id={"1"} title="hello" description="hello" adornmentLeft={<></>} adornmentRight={<></>}/>
-                <ListItem id={"1"} title="hello" description="hello" adornmentLeft={<></>} adornmentRight={<></>}/>
-                <ListItem id={"1"} title="hello" description="hello" adornmentLeft={<></>} adornmentRight={<></>}/>
-                <ListItem id={"1"} title="hello" description="hello" adornmentLeft={<></>} adornmentRight={<></>}/>
-                <ListItem id={"1"} title="hello" description="hello" adornmentLeft={<></>} adornmentRight={<></>}/>
-                <ListItem id={"1"} title="hello" description="hello" adornmentLeft={<></>} adornmentRight={<></>}/>
-                <ListItem id={"1"} title="hello" description="hello" adornmentLeft={<></>} adornmentRight={<></>}/>
-                <ListItem id={"1"} title="hello" description="hello" adornmentLeft={<></>} adornmentRight={<></>}/>
-                <ListItem id={"1"} title="hello" description="hello" adornmentLeft={<></>} adornmentRight={<></>}/>
-            </div>
-            <DrawerFooter className="flex-row">
-                <DrawerClose asChild>
-                    <Button variant="outline" className="flex-1">Cancel</Button>
-                </DrawerClose>
-            </DrawerFooter>
-
-        </DrawerContent>
-    )
+/**
+ * AccountPageDrawer
+ *
+ * Handle the different drawers for the account page
+ *
+ * @param type
+ * @param manager
+ * @param info
+ * @constructor
+ */
+function AccountPageDrawer({
+	type,
+	manager,
+	info,
+}: { type: DrawerType; manager: WalletManager; info: Account }) {
+	if (type === "opt-in") {
+		return <OptInDrawer info={info} />;
+	}
+	if (type === "receive") {
+		return <QrCodeDrawer manager={manager} />;
+	}
+	return <SendTransactionDrawer />;
 }
 
-function ReceiverAddressDrawer() {
-    return (
-        <DrawerContent>
-            <DrawerHeader>
-                <DrawerTitle>Receiver Address</DrawerTitle>
-                <DrawerDescription></DrawerDescription>
-            </DrawerHeader>
-            <div className="p-4 pb-0">
-                <div className="flex items-center justify-center space-x-2">
-                    <img src="/qr.png"/>
-                </div>
-                <div className="mt-3 h-[120px]">
-                </div>
-            </div>
-            <DrawerFooter className="flex-row">
-                <DrawerClose asChild>
-                    <Button variant="outline" className="flex-1">Cancel</Button>
-                </DrawerClose>
-            </DrawerFooter>
-        </DrawerContent>
-    )
-}
-
-const formSchema = z.object({
-    receiver: z.string().length(5, {message: "Receiver must be 5 characters."}),
-    assetId: z.number(),
-    quantity: z.number().min(1, {message: "Quantity must be at least 1."}),
-    notes: z.string(),
-})
-
-function SendTransactionDrawer({type}: { type: DrawerType }) {
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            receiver: "",
-            assetId: 0,
-            quantity: 0,
-            notes: "",
-        },
-    })
-
-    // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values)
-    }
-
-    return (
-        <DrawerContent>
-            <div className="mx-auto w-full max-w-sm">
-                <DrawerHeader>
-                    <DrawerTitle>{type === "send" ? "Send Payment" : "Receiver Address"}</DrawerTitle>
-                    <DrawerDescription></DrawerDescription>
-                </DrawerHeader>
-                <div className="p-4 pb-0">
-                    <div className="flex items-center justify-center space-x-2">
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                <FormField
-                                    control={form.control}
-                                    name="receiver"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Recipient Address</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="woods.algo" {...field} />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="assetId"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Asset</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="ALGO" {...field} />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="quantity"
-                                    render={() => (
-                                        <FormItem>
-                                            <FormLabel>Quantity</FormLabel>
-                                            <FormControl>
-                                                <Slider
-                                                    // Max should be (Min-Balance + Fee) - Balance
-                                                    max={1000}
-                                                    onChange={(e: any) => form.setValue("quantity", parseInt(e.target.value))}
-                                                />
-                                                {/*<Input placeholder="shadcn" {...field} />*/}
-                                            </FormControl>
-                                            <FormDescription>
-                                                {form.getValues("quantity")}
-                                            </FormDescription>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="notes"
-                                    render={({field}) => (
-                                        <FormItem>
-                                            <FormLabel>Notes</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="Lorem ipsum" {...field} />
-                                            </FormControl>
-                                            <FormMessage/>
-                                        </FormItem>
-                                    )}
-                                />
-                            </form>
-                        </Form>
-                    </div>
-                    <div className="mt-3 h-[120px]">
-                    </div>
-                </div>
-                <DrawerFooter className="flex-row">
-                    <DrawerClose asChild>
-                        <Button variant="outline" className="flex-1">Cancel</Button>
-                    </DrawerClose>
-                    <DrawerClose asChild>
-                        <Button className="flex-1" type="submit">Send</Button>
-                    </DrawerClose>
-                </DrawerFooter>
-            </div>
-        </DrawerContent>
-    )
-}
-
-function AccountPageDrawer({type}: { type: DrawerType }) {
-    if (type === "opt-in") {
-        return <OptInDrawer/>
-    }
-    if (type === "receive") {
-        return <ReceiverAddressDrawer/>
-    }
-    return <SendTransactionDrawer type={type}/>
-}
-
+/**
+ * Send/Receive Buttons
+ */
 const PaymentButton = forwardRef<HTMLButtonElement, any>((props, ref) => {
-    return (
-        <div className="flex flex-col justify-center items-center">
-            <Button ref={ref} onClick={props.onClick} className="rounded-3xl w-10 max-w-10 p-1">{props.icon}</Button>
-            <h4>{props.label}</h4>
-        </div>
-    )
-})
+	return (
+		<div className="flex flex-col justify-center items-center">
+			<Button
+				ref={ref}
+				onClick={props.onClick}
+				className="rounded-3xl w-10 max-w-10 p-1"
+			>
+				{props.icon}
+			</Button>
+			<h4>{props.label}</h4>
+		</div>
+	);
+});
+
+export type Asset = {
+	index: string;
+	name: string;
+	unitName: string;
+	logo: string;
+	amount: number;
+};
+
+/**
+ * AssetHoldings
+ *
+ * Display the users asset holdings
+ *
+ * @param assets
+ * @constructor
+ */
+export function AssetHoldings({ assets }: { assets: Asset[] }) {
+	const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+	return (
+		<div className="px-2.5 w-full flex-1">
+			<Dialog
+				onOpenChange={(open) => {
+					if (!open) setSelectedAsset(null);
+				}}
+			>
+				<DialogContent className="sm:max-w-[425px]">
+					<DialogHeader>
+						<DialogTitle>{selectedAsset?.unitName}</DialogTitle>
+						<DialogDescription>{selectedAsset?.name}</DialogDescription>
+					</DialogHeader>
+					<div className="grid gap-4 py-4">
+						<h1>Work in Progress!</h1>
+						<h2>This could be a page</h2>
+					</div>
+				</DialogContent>
+
+				{assets.map((asset) => (
+					<DialogTrigger key={asset.index} asChild>
+						<AssetListItem
+							onClick={() => setSelectedAsset(asset)}
+							key={asset.index}
+							index={asset.index}
+							name={asset.name}
+							logo={asset.logo}
+							amount={asset.amount}
+						/>
+					</DialogTrigger>
+				))}
+			</Dialog>
+		</div>
+	);
+}
 
 export function AccountPage() {
-    const [drawerType, setDrawerType] = useState<DrawerType>("send")
-    const assets = [
-        {
-            assetId: "0",
-            assetName: "ALGO",
-            assetAmount: 356,
-            logo: "https://asa-list.tinyman.org/assets/0/icon.svg",
-        },
-        {
-            assetId: "1",
-            assetName: "USDC",
-            assetAmount: 150,
-            logo: "https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png?1547042389",
-        },
-        {
-            assetId: "2",
-            assetName: "AKTA",
-            assetAmount: 150,
-            logo: "https://asa-list.tinyman.org/assets/523683256/icon.svg",
-        },
-    ]
-    return (
-        <Drawer>
-            <AccountPageDrawer type={drawerType}/>
-            <div className="h-full flex flex-col p-2">
-                <div className="grid w-full justify-center items-center text-center gap-2 my-4">
-                    <h1 className="text-4xl bold">356 ALGO</h1>
-                    <h1 className="text mb-4">$11.06 USD</h1>
-                    <div className="grid grid-cols-2 gap-20">
-                        <DrawerTrigger asChild><PaymentButton icon={<MoveDownRight/>} label="Recieve"
-                                                              onClick={() => setDrawerType("receive")}/></DrawerTrigger>
-                        <DrawerTrigger asChild><PaymentButton icon={<MoveUpRight/>} label="Send"
-                                                              onClick={() => setDrawerType("send")}/></DrawerTrigger>
+	// Drawer State
+	const [drawerType, setDrawerType] = useState<DrawerType>("send");
 
-                    </div>
-                </div>
+	// ❤ TxnLab Use Wallet
+	const manager = useWallet();
+	// ❤ Tinyman Icons
+	const icons = useIconAssets();
+	// ❤ Tinyman Prices
+	const algoPrice = usePrice(0);
 
+	// Watch the current account
+	const info = useAccountWatcher();
 
-                <div className="px-2.5 w-full flex-1">
-                    {assets.map((asset) => (
-                        <ListItem key={asset.assetId} id={asset.assetId} title={asset.assetName} description=""
-                                  adornmentLeft={<img src={asset.logo}/>}
-                                  adornmentRight={<Button variant="ghost"><ChevronRight/></Button>}/>
-                    ))}
-                </div>
+	// Map icons to assets
+	const assets = icons
+		.filter((icon) => {
+			if (typeof info?.data?.assets === "undefined") return false;
+			// Always allow Algorand as an asset
+			if (icon.index === "0") return true;
 
+			// Check if the asset is in the account
+			return info.data.assets.some(
+				(asset) => asset["asset-id"].toString() === icon.index,
+			);
+		})
+		.map((icon) => {
+			if (typeof info?.data?.assets === "undefined")
+				throw new Error("Assets are undefined");
 
-                <div className="grid w-full justify-center">
-                    <DrawerTrigger asChild><Button variant="ghost"
-                                                   onClick={() => setDrawerType("opt-in")}><SlidersHorizontal/> Manage
-                        ASA
-                        opt-ins</Button></DrawerTrigger>
-                </div>
-            </div>
-        </Drawer>
-    )
+			// Check if the asset has a logo or if it is the ALGO token
+			const asset =
+				icon.index === "0"
+					? // ALGO token data is not in the asset array, it is in the parent object
+						info.data
+					: // Find the asset in the account
+						info.data.assets.find(
+							(asset) => asset["asset-id"].toString() === icon.index,
+						);
+
+			// TODO: Set Precision of amount
+			return {
+				...icon,
+				amount: asset?.amount || 0,
+			};
+		});
+
+	// Handle Loading State
+	// TODO: allow for partial updates to the page, instead of a full page spinner
+	if (
+		info.isLoading ||
+		typeof info.data === "undefined" ||
+		typeof algoPrice.data === "undefined"
+	)
+		return (
+			<div className="flex h-full justify-center align-middle items-center">
+				<Spinner className="h-40 w-40" />
+			</div>
+		);
+
+	return (
+		<Drawer>
+			{/* Page Drawer */}
+			<AccountPageDrawer type={drawerType} manager={manager} info={info.data} />
+			<div className="h-full flex flex-col p-2">
+				{/* Account Information */}
+				<div className="grid w-full justify-center items-center text-center gap-2 my-4">
+					<h1 className="text-4xl bold">
+						{info.data.amount / 1000000 || 0} ALGO
+					</h1>
+					<h1 className="text mb-4">
+						$
+						{Math.round(algoPrice.data * (info.data.amount / 1000000) * 100) /
+							100}{" "}
+						USD
+					</h1>
+					<div className="grid grid-cols-2 gap-20">
+						<DrawerTrigger asChild>
+							<PaymentButton
+								icon={<MoveDownRight />}
+								label="Receive"
+								onClick={() => setDrawerType("receive")}
+							/>
+						</DrawerTrigger>
+						<DrawerTrigger asChild>
+							<PaymentButton
+								icon={<MoveUpRight />}
+								label="Send"
+								onClick={() => setDrawerType("send")}
+							/>
+						</DrawerTrigger>
+					</div>
+				</div>
+
+				{/* Account Holdings */}
+				<AssetHoldings assets={assets} />
+
+				{/* Manage Opt-in */}
+				<div className="grid w-full justify-center">
+					<DrawerTrigger asChild>
+						<Button variant="ghost" onClick={() => setDrawerType("opt-in")}>
+							<SlidersHorizontal /> Manage ASA opt-ins
+						</Button>
+					</DrawerTrigger>
+				</div>
+			</div>
+		</Drawer>
+	);
 }
